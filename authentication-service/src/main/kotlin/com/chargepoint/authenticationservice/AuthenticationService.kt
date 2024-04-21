@@ -1,9 +1,12 @@
 package com.chargepoint.authenticationservice
 
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class AuthenticationService {
+class AuthenticationService(
+    private val kafkaTemplate: KafkaTemplate<String, AuthenticationResponseEvent>
+) {
     private val users = arrayOf(
         User("af22009d-efc8-4cc4-8802-fa7b2bb98330", true),
         User("bb72649d-9246-423c-a56e-c8b92117dcdd", false),
@@ -32,5 +35,12 @@ class AuthenticationService {
 
         // If a valid user is allowed to charge, Accepted status will be returned
         return AuthorizationStatus.Accepted
+    }
+
+    fun produceAuthenticationResponseEvent(requestId: String, authorizationStatus: AuthorizationStatus) {
+        kafkaTemplate.send(
+            "AuthenticationResponses",
+            AuthenticationResponseEvent(requestId, authorizationStatus)
+        )
     }
 }

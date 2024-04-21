@@ -1,0 +1,8 @@
+### VS Code ###
+.vscode/
+
+### Kotlin ###
+.kotlin
+
+### IntelliJ IDEA ###
+.idea

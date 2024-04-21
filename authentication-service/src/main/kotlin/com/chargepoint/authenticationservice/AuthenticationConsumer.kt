@@ -6,12 +6,13 @@ import org.springframework.stereotype.Component
 @Component
 class AuthenticationConsumer(
     private val authenticationService: AuthenticationService,
-    private val authenticationProducer: AuthenticationProducer
 ) {
-    @KafkaListener(topics = ["AuthorizationStatusRequests"], groupId = "authentication")
-    fun listenAuthorizationStatusRequestsTopic(payload: AuthorizationStatusRequest) {
+    @KafkaListener(topics = ["AuthenticationRequests"], groupId = "authentication", properties = [
+        "spring.json.value.default.type=com.chargepoint.authenticationservice.AuthenticationRequestEvent"]
+    )
+    fun listenToAuthenticationRequestsTopic(payload: AuthenticationRequestEvent) {
         val authorizationStatus = authenticationService.getUserAuthorizationStatus(payload.driverIdentifierId)
 
-        authenticationProducer.produceAuthorizationStatusResponse(payload.requestId, authorizationStatus)
+        authenticationService.produceAuthenticationResponseEvent(payload.requestId, authorizationStatus)
     }
 }

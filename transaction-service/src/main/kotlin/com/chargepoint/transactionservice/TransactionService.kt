@@ -1,5 +1,6 @@
 package com.chargepoint.transactionservice
 
+import com.chargepoint.transactionservice.common.AuthenticationRequestEvent
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 

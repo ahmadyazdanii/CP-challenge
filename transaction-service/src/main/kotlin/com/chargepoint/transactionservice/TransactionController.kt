@@ -1,5 +1,8 @@
 package com.chargepoint.transactionservice
 
+import com.chargepoint.transactionservice.common.AuthenticationResponseEvent
+import com.chargepoint.transactionservice.dto.AuthorizationRequestDTO
+import com.chargepoint.transactionservice.dto.AuthorizationResponseDTO
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,12 +17,12 @@ import java.util.concurrent.ConcurrentHashMap
 class TransactionController(
     private val transactionService: TransactionService
 ) {
-    private val responses = ConcurrentHashMap<String, CompletableFuture<AuthorizationResponse>>()
+    private val responses = ConcurrentHashMap<String, CompletableFuture<AuthorizationResponseDTO>>()
 
     @PostMapping("/authorize")
-    fun getUserAuthorizationStatus(@RequestBody payload: AuthorizationPayloadDTO): AuthorizationResponse {
+    fun getUserAuthorizationStatus(@RequestBody payload: AuthorizationRequestDTO): AuthorizationResponseDTO {
         val requestId: String = UUID.randomUUID().toString()
-        val response = CompletableFuture<AuthorizationResponse>()
+        val response = CompletableFuture<AuthorizationResponseDTO>()
 
         // Produce an AuthenticationRequest event
         transactionService.produceAuthenticationRequestEvent(requestId, payload.driverIdentifier.id)
@@ -30,13 +33,13 @@ class TransactionController(
     }
 
     @KafkaListener(topics = ["AuthenticationResponses"], groupId = "transaction", properties = [
-        "spring.json.value.default.type=com.chargepoint.transactionservice.AuthenticationResponseEvent"]
+        "spring.json.value.default.type=com.chargepoint.transactionservice.common.AuthenticationResponseEvent"]
     )
     fun listenAuthorizationStatusResponsesTopic(event: AuthenticationResponseEvent) {
         val response = responses.remove(event.requestId)
 
         response?.complete(
-            AuthorizationResponse(event.authorizationStatus)
+            AuthorizationResponseDTO(event.authorizationStatus)
         )
     }
 }

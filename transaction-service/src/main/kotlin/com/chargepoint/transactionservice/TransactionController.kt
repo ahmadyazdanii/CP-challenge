@@ -3,43 +3,62 @@ package com.chargepoint.transactionservice
 import com.chargepoint.transactionservice.common.AuthenticationResponseEvent
 import com.chargepoint.transactionservice.dto.AuthorizationRequestDTO
 import com.chargepoint.transactionservice.dto.AuthorizationResponseDTO
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.*
 
 @RestController
 @RequestMapping("/transaction")
 class TransactionController(
     private val transactionService: TransactionService
 ) {
-    private val responses = ConcurrentHashMap<String, CompletableFuture<AuthorizationResponseDTO>>()
+    private val requestsState = ConcurrentHashMap<String, Pair<CompletableFuture<AuthorizationResponseDTO>, ScheduledFuture<*>>>()
+    private val scheduler = Executors.newScheduledThreadPool(1)
 
-    @PostMapping("/authorize")
-    fun getUserAuthorizationStatus(@RequestBody payload: AuthorizationRequestDTO): AuthorizationResponseDTO {
-        val requestId: String = UUID.randomUUID().toString()
-        val response = CompletableFuture<AuthorizationResponseDTO>()
+    private fun scheduleToRemoveSuspendedState(requestId: String): ScheduledFuture<*> {
+        return scheduler.schedule({
+            requestsState.remove(requestId)
+        }, 15, TimeUnit.SECONDS)
+    }
+    private fun storeCurrentRequestState(requestId: String): Pair<CompletableFuture<AuthorizationResponseDTO>, ScheduledFuture<*>> {
+        val completableResponse = CompletableFuture<AuthorizationResponseDTO>()
+        val scheduledTask = scheduleToRemoveSuspendedState(requestId)
+        val currentRequestState = Pair(completableResponse, scheduledTask)
 
-        // Produce an AuthenticationRequest event
-        transactionService.produceAuthenticationRequestEvent(requestId, payload.driverIdentifier.id)
-        // Store current request's response
-        responses[requestId] = response
+        // Store current request's state
+        requestsState[requestId] = currentRequestState
 
-        return response.get()
+        return currentRequestState
     }
 
-    @KafkaListener(topics = ["AuthenticationResponses"], groupId = "transaction", properties = [
-        "spring.json.value.default.type=com.chargepoint.transactionservice.common.AuthenticationResponseEvent"]
-    )
-    fun listenAuthorizationStatusResponsesTopic(event: AuthenticationResponseEvent) {
-        val response = responses.remove(event.requestId)
+    @PostMapping("/authorize")
+    fun getUserAuthorizationStatus(@RequestBody payload: AuthorizationRequestDTO): Any {
+        val requestId: String = UUID.randomUUID().toString()
 
-        response?.complete(
+        // Store current request's response
+        val currentRequestState = storeCurrentRequestState(requestId)
+        // Produce an AuthenticationRequest event
+        transactionService.produceAuthenticationRequestEvent(requestId, payload.driverIdentifier.id)
+
+        try {
+            return currentRequestState.first.get(10, TimeUnit.SECONDS)
+        }catch (err: TimeoutException) {
+            return ResponseEntity
+                .status(HttpStatus.REQUEST_TIMEOUT)
+                .body("Request timed out. Please try again later.")
+        }
+    }
+
+    @KafkaListener(topics = ["AuthenticationResponses"], groupId = "transaction")
+    fun listenToAuthenticationResponsesTopic(event: AuthenticationResponseEvent) {
+        val currentRequestState = requestsState.remove(event.requestId)
+
+        currentRequestState?.first?.complete(
             AuthorizationResponseDTO(event.authorizationStatus)
         )
+        currentRequestState?.second?.cancel(false)
     }
 }

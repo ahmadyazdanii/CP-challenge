@@ -1,24 +1,18 @@
 package com.chargepoint.authenticationservice
 
-import com.chargepoint.authenticationservice.common.AuthenticationRequestEvent
-import com.chargepoint.authenticationservice.common.AuthorizationStatus
+import com.chargepoint.common.event.AuthenticationRequestEvent
+import com.chargepoint.common.AuthorizationStatus
 import io.mockk.*
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.*
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class AuthenticationConsumerTest {
-    @MockK
-    private lateinit var authenticationService: AuthenticationService
+    val authenticationService = mockk<AuthenticationService>(relaxed = true)
 
-    @InjectMockKs
-    private lateinit var authenticationConsumer: AuthenticationConsumer
+    lateinit var authenticationConsumer: AuthenticationConsumer
 
     @BeforeEach
     fun setup() {
-        MockKAnnotations.init(this)
+        authenticationConsumer = AuthenticationConsumer(authenticationService)
     }
 
     @Nested

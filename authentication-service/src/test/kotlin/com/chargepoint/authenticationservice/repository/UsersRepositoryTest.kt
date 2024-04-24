@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 
 class UsersRepositoryTest {
-    private val usersRepository = UsersRepository()
+    val usersRepository = UsersRepository()
 
     @Nested
     @DisplayName("When findOneById was called")

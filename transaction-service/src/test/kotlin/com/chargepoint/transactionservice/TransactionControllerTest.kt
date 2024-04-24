@@ -22,6 +22,7 @@ class TransactionControllerTest {
     lateinit var objectMapper: ObjectMapper
 
     val transactionService = mockk<TransactionService>(relaxed = true)
+
     lateinit var transactionController: TransactionController
 
     @BeforeEach

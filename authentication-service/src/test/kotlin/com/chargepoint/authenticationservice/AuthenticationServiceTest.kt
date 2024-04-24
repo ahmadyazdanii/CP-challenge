@@ -1,7 +1,7 @@
 package com.chargepoint.authenticationservice
 
-import com.chargepoint.authenticationservice.common.AuthenticationResponseEvent
-import com.chargepoint.authenticationservice.common.AuthorizationStatus
+import com.chargepoint.common.event.AuthenticationResponseEvent
+import com.chargepoint.common.AuthorizationStatus
 import com.chargepoint.authenticationservice.model.User
 import com.chargepoint.authenticationservice.repository.UsersRepository
 import io.mockk.every
@@ -12,10 +12,10 @@ import org.junit.jupiter.api.*
 import org.springframework.kafka.core.KafkaTemplate
 
 class AuthenticationServiceTest {
-    private val kafkaTemplate = mockk<KafkaTemplate<String, AuthenticationResponseEvent>>(relaxed = true)
-    private val usersRepository = mockk<UsersRepository>()
+    val kafkaTemplate = mockk<KafkaTemplate<String, AuthenticationResponseEvent>>(relaxed = true)
+    val usersRepository = mockk<UsersRepository>()
 
-    private lateinit var authenticationService: AuthenticationService
+    lateinit var authenticationService: AuthenticationService
 
     @BeforeEach
     fun setup() {

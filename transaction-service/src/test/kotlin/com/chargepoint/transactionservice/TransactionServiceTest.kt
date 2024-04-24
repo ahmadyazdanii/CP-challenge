@@ -1,6 +1,6 @@
 package com.chargepoint.transactionservice
 
-import com.chargepoint.transactionservice.common.AuthenticationRequestEvent
+import com.chargepoint.common.event.AuthenticationRequestEvent
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.*
@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.kafka.core.KafkaTemplate
 
 class TransactionServiceTest {
-    private val kafkaTemplate = mockk<KafkaTemplate<String, AuthenticationRequestEvent>>(relaxed = true)
+    val kafkaTemplate = mockk<KafkaTemplate<String, AuthenticationRequestEvent>>(relaxed = true)
 
-    private lateinit var transactionService: TransactionService
+    lateinit var transactionService: TransactionService
 
     @BeforeEach
     fun setup() {

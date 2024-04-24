@@ -1,6 +1,6 @@
 package com.chargepoint.transactionservice
 
-import com.chargepoint.transactionservice.common.AuthenticationResponseEvent
+import com.chargepoint.common.event.AuthenticationResponseEvent
 import com.chargepoint.transactionservice.dto.AuthorizationRequestDTO
 import com.chargepoint.transactionservice.dto.AuthorizationResponseDTO
 import org.springframework.http.HttpStatus

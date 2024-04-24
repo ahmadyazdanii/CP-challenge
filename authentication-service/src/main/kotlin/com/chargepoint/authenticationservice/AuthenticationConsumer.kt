@@ -1,6 +1,6 @@
 package com.chargepoint.authenticationservice
 
-import com.chargepoint.authenticationservice.common.AuthenticationRequestEvent
+import com.chargepoint.common.event.AuthenticationRequestEvent
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 
@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component
 class AuthenticationConsumer(
     private val authenticationService: AuthenticationService,
 ) {
-    @KafkaListener(topics = ["AuthenticationRequests"], groupId = "authentication", properties = [
-        "spring.json.value.default.type=com.chargepoint.authenticationservice.common.AuthenticationRequestEvent"]
-    )
+    @KafkaListener(topics = ["AuthenticationRequests"], groupId = "authentication")
     fun listenToAuthenticationRequestsTopic(payload: AuthenticationRequestEvent) {
         val authorizationStatus = authenticationService.getUserAuthorizationStatus(payload.driverIdentifierId)
 

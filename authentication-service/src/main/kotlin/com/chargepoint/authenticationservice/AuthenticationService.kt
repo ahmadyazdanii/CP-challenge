@@ -1,8 +1,8 @@
 package com.chargepoint.authenticationservice
 
-import com.chargepoint.authenticationservice.common.AuthenticationResponseEvent
-import com.chargepoint.authenticationservice.common.AuthorizationStatus
 import com.chargepoint.authenticationservice.repository.UsersRepository
+import com.chargepoint.common.event.AuthenticationResponseEvent
+import com.chargepoint.common.AuthorizationStatus
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 

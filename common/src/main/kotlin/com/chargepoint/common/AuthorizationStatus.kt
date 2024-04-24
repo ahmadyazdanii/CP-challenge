@@ -1,4 +1,4 @@
-package com.chargepoint.transactionservice.common
+package com.chargepoint.common
 
 enum class AuthorizationStatus {
     Accepted,

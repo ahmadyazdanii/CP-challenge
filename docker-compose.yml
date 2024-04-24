@@ -64,6 +64,8 @@ services:
   transaction-service:
     image: transaction-service
     container_name: transaction
+    environment:
+      KAFKA_BOOTSTRAP_URL: kafka1:19092
     build:
       context:
         "./transaction-service"
@@ -80,6 +82,8 @@ services:
   authentication-service:
     image: authentication-service
     container_name: authentication
+    environment:
+      KAFKA_BOOTSTRAP_URL: kafka1:19092
     build:
       context:
         "./authentication-service"

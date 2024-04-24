@@ -1,3 +1,5 @@
 package com.chargepoint.transactionservice.dto
 
-data class DriverIdentifierDTO(val id: String)
+import jakarta.validation.constraints.NotBlank
+
+data class DriverIdentifierDTO(@field:NotBlank val id: String)

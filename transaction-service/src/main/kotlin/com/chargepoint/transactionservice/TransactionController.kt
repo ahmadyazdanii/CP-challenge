@@ -3,6 +3,7 @@ package com.chargepoint.transactionservice
 import com.chargepoint.common.event.AuthenticationResponseEvent
 import com.chargepoint.transactionservice.dto.AuthorizationRequestDTO
 import com.chargepoint.transactionservice.dto.AuthorizationResponseDTO
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.kafka.annotation.KafkaListener
@@ -23,6 +24,7 @@ class TransactionController(
             requestsState.remove(requestId)
         }, 15, TimeUnit.SECONDS)
     }
+
     private fun storeCurrentRequestState(requestId: String): Pair<CompletableFuture<AuthorizationResponseDTO>, ScheduledFuture<*>> {
         val completableResponse = CompletableFuture<AuthorizationResponseDTO>()
         val scheduledTask = scheduleToRemoveSuspendedState(requestId)
@@ -35,7 +37,7 @@ class TransactionController(
     }
 
     @PostMapping("/authorize")
-    fun getUserAuthorizationStatus(@RequestBody payload: AuthorizationRequestDTO): Any {
+    fun getUserAuthorizationStatus(@Valid @RequestBody payload: AuthorizationRequestDTO): Any {
         val requestId: String = UUID.randomUUID().toString()
 
         // Store current request's response

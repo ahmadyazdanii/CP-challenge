@@ -1,13 +1,13 @@
 package com.chargepoint.transactionservice
 
-import com.chargepoint.transactionservice.dto.AuthorizationRequestDTO
-import com.chargepoint.transactionservice.dto.DriverIdentifierDTO
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.servlet.MockMvc
-import org.junit.jupiter.api.*
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.post
 import java.util.UUID
@@ -74,25 +74,5 @@ class TransactionControllerTest {
                     status { isBadRequest() }
                 }
         }
-
-//        @Test
-//        fun `Should return a request-timeout when the response won't be prepared after 10 seconds`() {
-//            val validPayload = AuthorizationRequestDTO(
-//                UUID.randomUUID(),
-//                DriverIdentifierDTO("valid-id")
-//            )
-//
-//            val performPost = mockMvc.post("/transaction/authorize") {
-//                contentType = MediaType.APPLICATION_JSON
-//                content = objectMapper.writeValueAsString(validPayload)
-//            }
-//
-//
-//            performPost
-//                .andDo { print() }
-//                .andExpect {
-//                    status { isRequestTimeout() }
-//                }
-//        }
     }
 }

@@ -3,8 +3,10 @@ package com.chargepoint.transactionservice
 import com.chargepoint.common.event.AuthenticationRequestEvent
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.springframework.kafka.core.KafkaTemplate
 
 class TransactionServiceTest {

@@ -18,12 +18,8 @@ class AuthenticationService(
             return AuthorizationStatus.Invalid
         }
         // Find user via user ID
-        val userInstance = usersRepository.findOneById(userId)
+        val userInstance = usersRepository.findOneById(userId) ?: return AuthorizationStatus.Unknown
 
-        // Check Unknown status
-        if (userInstance == null) {
-            return AuthorizationStatus.Unknown
-        }
         // Check Rejected status
         if(!userInstance.isAllowedToCharge) {
             return AuthorizationStatus.Rejected

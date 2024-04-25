@@ -2,8 +2,15 @@ package com.chargepoint.authenticationservice
 
 import com.chargepoint.common.event.AuthenticationRequestEvent
 import com.chargepoint.common.AuthorizationStatus
-import io.mockk.*
-import org.junit.jupiter.api.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 class AuthenticationConsumerTest {
     val authenticationService = mockk<AuthenticationService>(relaxed = true)

@@ -1,9 +1,10 @@
 package com.chargepoint.authenticationservice.repository
 
 import com.chargepoint.authenticationservice.model.User
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 
